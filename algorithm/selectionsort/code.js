@@ -1,10 +1,10 @@
 function selectionSort(items) {
   for (let i = 0; i < items.length - 1; i++) {
-    let targetIndex = i;
+    let minIndex = i;
     for (let j = i + 1; j < items.length; j++) {
-      if (items[targetIndex] > items[j]) targetIndex = j;
+      if (items[minIndex] > items[j]) minIndex = j;
     }
-    if (targetIndex != i) [items[i], items[targetIndex]] = [items[targetIndex], items[i]];
+    if (minIndex != i) [items[i], items[minIndex]] = [items[minIndex], items[i]];
   }
   return items;
 }
