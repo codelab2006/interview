@@ -1,0 +1,74 @@
+   ┌───────────────────────────┐
+┌─>│           timers          │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+│  │     pending callbacks     │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+│  │       idle, prepare       │
+│  └─────────────┬─────────────┘      ┌───────────────┐
+│  ┌─────────────┴─────────────┐      │   incoming:   │
+│  │           poll            │<─────┤  connections, │
+│  └─────────────┬─────────────┘      │   data, etc.  │
+│  ┌─────────────┴─────────────┐      └───────────────┘
+│  │           check           │
+│  └─────────────┬─────────────┘
+│  ┌─────────────┴─────────────┐
+└──┤      close callbacks      │
+   └───────────────────────────┘
+
+Each phase has a FIFO queue of callbacks to execute. While each phase is special in its own way, generally,
+when the event loop enters a given phase, it will perform any operations specific to that phase,
+then execute callbacks in that phase's queue until the queue has been exhausted（队列被耗尽） or the maximum number of callbacks has executed.
+When the queue has been exhausted or the callback limit is reached, the event loop will move to the next phase, and so on.
+
+Since any of these operations may schedule more operations and new events processed in the poll phase are queued by the kernel,
+poll events can be queued while polling events are being processed.
+As a result, long running callbacks can allow the poll phase to run much longer than a timer's threshold.
+See the timers and poll sections for more details.
+
+timers: this phase executes callbacks scheduled by setTimeout() and setInterval().
+        计时器指定阈值，在该阈值之后可以执行提供的回调而不是人们希望它执行的确切时间。
+        定时器回调将在指定的时间过去后尽早安排; 但是，操作系统调度或其他回调的运行可能会延迟它们。
+        注意：从技术上讲，轮询阶段控制何时执行定时器。(timer.js)
+
+pending callbacks: executes I/O callbacks deferred to the next loop iteration.
+                   This phase executes callbacks for some system operations such as types of TCP errors.
+                   For example if a TCP socket receives ECONNREFUSED when attempting to connect,
+                   some *nix systems want to wait to report the error. This will be queued to execute in the pending callbacks phase.
+idle, prepare: only used internally.
+poll: retrieve new I/O events; execute I/O related callbacks
+      (almost all with the exception of close callbacks, the ones scheduled by timers, and setImmediate());
+      node will block here when appropriate.
+      The poll phase has two main functions:
+        1. Calculating how long it should block and poll for I/O, then
+        2. Processing events in the poll queue.
+      When the event loop enters the poll phase and there are no timers scheduled, one of two things will happen:
+        1. If the poll queue is not empty, the event loop will iterate through its queue of callbacks executing them synchronously until either the queue has been exhausted, or the system-dependent hard limit is reached.
+        2. If the poll queue is empty, one of two more things will happen:
+              If scripts have been scheduled by setImmediate(), the event loop will end the poll phase and continue to the check phase to execute those scheduled scripts.
+              If scripts have not been scheduled by setImmediate(), the event loop will wait for callbacks to be added to the queue, then execute them immediately.
+      Once the poll queue is empty the event loop will check for timers whose time thresholds have been reached.
+      If one or more timers are ready, the event loop will wrap back to the timers phase to execute those timers' callbacks.
+
+check: setImmediate() callbacks are invoked here.
+       This phase allows a person to execute callbacks immediately after the poll phase has completed.
+       If the poll phase becomes idle and scripts have been queued with setImmediate(), the event loop may continue to the check phase rather than waiting.
+       setImmediate() is actually a special timer that runs in a separate phase of the event loop. It uses a libuv API that schedules callbacks to execute after the poll phase has completed.
+       Generally, as the code is executed, the event loop will eventually hit the poll phase where it will wait for an incoming connection, request, etc.
+       However, if a callback has been scheduled with setImmediate() and the poll phase becomes idle,
+       it will end and continue to the check phase rather than waiting for poll events.
+close callbacks: some close callbacks, e.g. socket.on('close', ...).
+                 If a socket or handle is closed abruptly (e.g. socket.destroy()),
+                 the 'close' event will be emitted in this phase. Otherwise it will be emitted via process.nextTick().
+
+setImmediate() vs setTimeout()
+  setImmediate and setTimeout() are similar, but behave in different ways depending on when they are called.
+    setImmediate() is designed to execute a script once the current poll phase completes.
+    setTimeout() schedules a script to be run after a minimum threshold in ms has elapsed.
+  The order in which the timers are executed will vary depending on the context in which they are called.
+  If both are called from within the main module, then timing will be bound by the performance of the process
+  (which can be impacted by other applications running on the machine).
+  For example, if we run the following script which is not within an I/O cycle (i.e. the main module),
+  the order in which the two timers are executed is non-deterministic, as it is bound by the performance of the process. (timeout_vs_immediate_non_deterministic.js)
+  However, if you move the two calls within an I/O cycle, the immediate callback is always executed first. (timeout_vs_immediate_immediate_first.js)
