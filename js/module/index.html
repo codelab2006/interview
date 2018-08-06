@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Module</title>
+    <script type="module">
+      import say from './tools.js';
+      import { say as say1 } from './tools.js';
+      import { say as say2 } from './tools.js';
+      say1();
+      say2();
+      console.log(this);
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

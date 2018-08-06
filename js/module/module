@@ -1,3 +1,30 @@
 ES6 模块的设计思想是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。
 CommonJS 和 AMD 模块，都只能在运行时确定这些东西。比如，CommonJS 模块就是对象，输入时必须查找对象属性。
 
+Module 的加载实现
+<!-- 页面内嵌的脚本 -->
+<script type="application/javascript">
+</script>
+
+<!-- 外部脚本 -->
+<script type="application/javascript" src="path/to/myModule.js">
+</script>
+上面代码中，由于浏览器脚本的默认语言是 JavaScript，因此type="application/javascript"可以省略。
+
+<script src="path/to/myModule.js" defer></script>
+<script src="path/to/myModule.js" async></script>
+defer与async的区别是：defer要等到整个页面在内存中正常渲染结束（DOM 结构完全生成，以及其他脚本执行完成），才会执行；
+async一旦下载完，渲染引擎就会中断渲染，执行这个脚本以后，再继续渲染。一句话，defer是“渲染完再执行”，async是“下载完就执行”。
+另外，如果有多个defer脚本，会按照它们在页面出现的顺序加载，而多个async脚本是不能保证加载顺序的。
+
+浏览器加载 ES6 模块
+<script type="module" src="./foo.js"></script>
+浏览器对于带有type="module"的<script>，都是异步加载，不会造成堵塞浏览器，即等到整个页面渲染完，再执行模块脚本，等同于打开了<script>标签的defer属性。
+
+CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用。
+CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
+
+Node 加载
+Node 要求 ES6 模块采用.mjs后缀文件名。也就是说，只要脚本文件里面使用import或者export命令，那么就必须采用.mjs后缀名。
+require命令不能加载.mjs文件，会报错，只有import命令才可以加载.mjs文件。反过来，
+.mjs文件里面也不能使用require命令，必须使用import。
