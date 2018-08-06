@@ -15,6 +15,12 @@
       "request": "launch",
       "name": "Debug server",
       "program": "${workspaceFolder}/lab\\node\\server.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug koa-server",
+      "program": "${workspaceFolder}/lab\\koa-server\\server.js"
     }
   ]
 }
