@@ -21,6 +21,24 @@
       "request": "launch",
       "name": "Debug koa-server",
       "program": "${workspaceFolder}/lab\\koa-server\\server.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug event",
+      "program": "${workspaceFolder}/lab\\node\\events.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug http",
+      "program": "${workspaceFolder}/lab\\node\\Anatomy-of-an-HTTP-Transaction.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug stream",
+      "program": "${workspaceFolder}/lab\\node\\stream.js"
     }
   ]
 }
