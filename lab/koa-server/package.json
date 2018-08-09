@@ -1,9 +1,0 @@
-{
-  "name": "koa-server",
-  "version": "1.0.0",
-  "description": "koa server",
-  "scripts": {},
-  "dependencies": {
-    "koa": "2.5.2"
-  }
-}
