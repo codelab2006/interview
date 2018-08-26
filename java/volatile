@@ -1,0 +1,1 @@
+没有申明为volatile的64位数值变量(double和long)没有最低限的安全性
