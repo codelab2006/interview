@@ -1,0 +1,31 @@
+Subclass or Runnable?
+There are no rules about which of the two methods that is the best. Both methods works. 
+Personally though, I prefer implementing Runnable, and handing an instance of the implementation to a Thread instance. 
+When having the Runnable's executed by a thread pool it is easy to queue up the Runnable instances until a thread from the pool is idle. 
+This is a little harder to do with Thread subclasses.
+Sometimes you may have to implement Runnable as well as subclass Thread. For instance, 
+if creating a subclass of Thread that can execute more than one Runnable. This is typically the case when implementing a thread pool.
+
+Common Pitfall: Calling run() Instead of start()
+When creating and starting a thread a common mistake is to call the run() method of the Thread instead of start(), like this:
+
+  Thread newThread = new Thread(MyRunnable());
+  newThread.run();  //should be start();
+
+At first you may not notice anything because the Runnable's run() method is executed like you expected. However, 
+it is NOT executed by the new thread you just created. Instead the run() method is executed by the thread that created the thread. 
+In other words, the thread that executed the above two lines of code. 
+To have the run() method of the MyRunnable instance called by the new created thread, newThread, you MUST call the newThread.start() method.
+
+public static void main(String[] args) {
+    Thread thread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            System.out.println(Thread.currentThread().getName());
+        }
+    });
+    thread.run(); //Main
+    thread.start(); //Thread-0
+}
+
+//==============================================================================================
