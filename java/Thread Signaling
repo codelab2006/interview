@@ -1,0 +1,123 @@
+package com.lab.concurrent;
+
+// both the waiting and notifying thread calls wait() and notify() from within a synchronized block.
+// This is mandatory! A thread cannot call wait(), notify() or notifyAll() without holding the lock on the object the method is called on.
+// If it does, an IllegalMonitorStateException is thrown.
+
+class Signal {
+
+}
+
+class Worker implements Runnable {
+
+    @Override
+    public void run() {
+        System.out.println(Thread.currentThread().getName() + " before");
+        this.doWait();
+        System.out.println(Thread.currentThread().getName() + " after");
+    }
+
+    private synchronized void doWait() {
+        try {
+            this.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+class WorkerWithSignal implements Runnable {
+
+    private Signal signal;
+
+    public WorkerWithSignal(Signal signal) {
+        this.signal = signal;
+    }
+
+    @Override
+    public void run() {
+        System.out.println(Thread.currentThread().getName() + " before");
+        this.doWait();
+        System.out.println(Thread.currentThread().getName() + " after");
+    }
+
+    private void doWait() {
+        synchronized (this.signal) {
+            try {
+                this.signal.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+        Signal signal = new Signal();
+
+        WorkerWithSignal workerWithSignal = new WorkerWithSignal(signal);
+        Worker worker = new Worker();
+
+        Thread thread1 = new Thread(workerWithSignal, "WorkerWithSignal1");
+        Thread thread2 = new Thread(workerWithSignal, "WorkerWithSignal2");
+
+        Thread thread3 = new Thread(worker, "Worker3");
+        Thread thread4 = new Thread(worker, "Worker4");
+        Thread thread5 = new Thread(worker, "Worker5");
+        Thread thread6 = new Thread(worker, "Worker6");
+        Thread thread7 = new Thread(worker, "Worker7");
+
+        thread1.start();
+        thread2.start();
+
+        thread3.start();
+        thread4.start();
+        thread5.start();
+        thread6.start();
+        thread7.start();
+
+        try {
+            Thread.sleep(5000); //等待所有的线程都启动,并处于等待状态.注意如果notify调用在wait之前,将Missed Signals
+            synchronized (signal) {
+                signal.notify();
+            }
+            synchronized (worker) {
+                worker.notify();
+                worker.notify();
+                worker.notify();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+//Spurious Wakeups 虚假唤醒. 使用自旋锁来处理虚假唤醒
+public class MyWaitNotify3{
+
+    MonitorObject myMonitorObject = new MonitorObject();
+    boolean wasSignalled = false;
+
+    public void doWait(){
+        synchronized(myMonitorObject){
+            while(!wasSignalled){
+                try{
+                    myMonitorObject.wait();
+                } catch(InterruptedException e){...}
+            }
+            //clear signal and continue running.
+            wasSignalled = false;
+        }
+    }
+
+    public void doNotify(){
+        synchronized(myMonitorObject){
+            wasSignalled = true;
+            myMonitorObject.notify();
+        }
+    }
+}
+
+//不要对wait（）/ notify（）机制使用全局对象，字符串常量等
