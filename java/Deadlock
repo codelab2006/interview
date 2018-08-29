@@ -1,0 +1,38 @@
+package com.lab.concurrent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+class TreeNode {
+
+    private TreeNode parent;
+    private List<TreeNode> children = new ArrayList<>();
+
+    public synchronized void addChild( TreeNode child ) {
+        if(!this.children.contains(child)) {
+            this.children.add(child);
+            child.setParentOnly(this);
+        }
+    }
+
+    public synchronized void setParent( TreeNode parent ) {
+        this.parent = parent;
+        parent.addChildOnly(this);
+    }
+
+    private synchronized void setParentOnly( TreeNode parent ) {
+        this.parent = parent;
+    }
+
+    private synchronized void addChildOnly( TreeNode child ) {
+        if(!this.children.contains(child)) {
+            this.children.add(child);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+    }
+}
