@@ -1,0 +1,65 @@
+package com.lab.concurrent;
+
+/**
+ * synchronized is Reentrance
+ * But Lock is not.
+ */
+class Lock {
+
+    private boolean isLocked = false;
+
+    public synchronized void lock() {
+        while (isLocked) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        isLocked = true;
+    }
+
+    public void unlock() {
+        isLocked = false;
+        notify();
+    }
+}
+
+class ReentrantLock {
+
+    private boolean isLocked = false;
+    private Thread lockBy = null;
+    int lockedCount = 0;
+
+    public synchronized void lock() {
+        Thread callingThread = Thread.currentThread();
+        while (isLocked && lockBy != callingThread) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        isLocked = true;
+        lockBy = callingThread;
+        lockedCount++;
+    }
+
+    public void unlock() {
+        if (Thread.currentThread() == this.lockBy) {
+            lockedCount--;
+            if (lockedCount == 0) {
+                isLocked = false;
+                notify();
+            }
+        }
+    }
+}
+
+// Calling unlock() From a finally-clause
+// lock.lock();
+// try{
+//    //do critical section code, which may throw exception
+// } finally {
+//     lock.unlock();
+// }
