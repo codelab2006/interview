@@ -1,0 +1,21 @@
+Java默认提供的三个ClassLoader:
+BootStrap ClassLoader
+    Extension ClassLoader
+        App ClassLoader
+
+Arrays.stream(System.getProperty("sun.boot.class.path").split(";")).forEach(e -> println(e));
+println(sun.misc.Launcher.getLauncher().getClassLoader().getParent());//sun.misc.Launcher$ExtClassLoader@6d311334
+Arrays.stream(System.getProperty("java.ext.dirs").split(";")).forEach(e -> println(e));
+println(sun.misc.Launcher.getLauncher().getClassLoader());//sun.misc.Launcher$AppClassLoader@18b4aac2
+Arrays.stream(System.getProperty("java.class.path").split(";")).forEach(e -> println(e));
+
+println(Main.class.getClassLoader().getParent());//sun.misc.Launcher$ExtClassLoader@6d311334
+println(Main.class.getClassLoader());//sun.misc.Launcher$AppClassLoader@18b4aac2
+
+* Returns the class loader for the class.  Some implementations may use
+* null to represent the bootstrap class loader. This method will return
+* null in such implementations if this class was loaded by the bootstrap
+* class loader.
+System.class.getClassLoader() //null
+
+JVM在判定两个class是否相同时，不仅要判断两个类名是否相同，而且要判断是否由同一个类加载器实例加载的。只有两者同时满足的情况下，JVM才认为这两个class是相同的
