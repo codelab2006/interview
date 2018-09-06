@@ -1,0 +1,24 @@
+Java IO: Pipes
+    Pipes in Java IO provides the ability for two threads running in the same JVM to communicate.
+    Therefore pipes can also be sources or destinations of data.
+    You cannot use a pipe to communicate with a thread in a different JVM (different process).
+    The pipe concept in Java is different from the pipe concept in Unix / Linux,
+    where two processes running in different address spaces can communicate via a pipe.
+    In Java, the communicating parties must be running in the same process, and should be different threads.
+
+Exchanging System Streams
+    Even if the 3 System streams are static members of the java.lang.System class, and are pre-instantiated at JVM startup,
+    you can change what streams to use for each of them.
+    Just set a new InputStream for System.in or a new OutputStream for System.out or System.err,
+    and all further data will be read / written to the new stream.
+
+    To set a new System stream, use one of th emethods System.setIn(), System.setOut() or System.setErr().
+    Here is a simple example:
+
+        OutputStream output = new FileOutputStream("c:\\data\\system.out.txt");
+        PrintStream printOut = new PrintStream(output);
+
+    System.setOut(printOut);
+    Now all data written to System.out should be redirected into the file "c:\\data\\system.out.txt".
+    Keep in mind though, that you should make sure to flush System.out and close the file before the JVM shuts down,
+    to be sure that all data written to System.out is actually flushed to the file.
