@@ -1,0 +1,23 @@
+1. Static Field Holding On to the Object Reference
+    public static final ArrayList<Double> list = new ArrayList<Double>(1000000);
+
+2. Calling String.intern() on Long String (string objects are stored in PermGen space)
+    Returns a canonical representation for the string object.
+    A pool of strings, initially empty, is maintained privately by the class String.
+    When the intern method is invoked, if the pool already contains a string equal to this String object
+    as determined by the equals(Object) method, then the string from the pool is returned.
+    Otherwise, this String object is added to the pool and a reference to this String object is returned.
+
+3. Unclosed Streams
+
+4. Unclosed Connections
+
+5. Adding Objects with no hashCode() and equals() into a HashSet
+
+How to Find Leaking Sources in Your Application
+    1. Verbose Garbage Collection
+        By adding the -verbose:gc parameter to the JVM configuration of our application
+    2. Do Profiling
+        The most popular profiler is Visual VM – which is a good place to start moving past
+        command-line JDK tools and into lightweight profiling.
+
