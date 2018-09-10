@@ -1,0 +1,36 @@
+new_task.js
+var amqp = require('amqplib/callback_api');
+
+amqp.connect('amqp://localhost', function(err, conn) {
+  conn.createChannel(function(err, ch) {
+    var q = 'task_queue';
+    var msg = process.argv.slice(2).join(' ') || "Hello World!";
+
+    ch.assertQueue(q, {durable: true}); // durable 如果为true，则队列将在代理重新启动后生效
+    ch.sendToQueue(q, new Buffer(msg), {persistent: true});
+    console.log(" [x] Sent '%s'", msg);
+  });
+  setTimeout(function() { conn.close(); process.exit(0) }, 500);
+});
+//================================================================================
+worker.js
+var amqp = require('amqplib/callback_api');
+
+amqp.connect('amqp://localhost', function(err, conn) {
+  conn.createChannel(function(err, ch) {
+    var q = 'task_queue';
+
+    ch.assertQueue(q, {durable: true}); // worker的durable应该与new_task的相同
+    ch.prefetch(1); // prefetch(count, [global]) 一旦有未完成的count消息，服务器将不会在此通道上发送更多消息，直到确认了一个或多个消息。false值表示没有这样的限制。
+    console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q);
+    ch.consume(q, function(msg) {
+      var secs = msg.content.toString().split('.').length - 1;
+
+      console.log(" [x] Received %s", msg.content.toString());
+      setTimeout(function() {
+        console.log(" [x] Done");
+        ch.ack(msg); // ack 发送任务完成通知
+      }, secs * 1000);
+    }, {noAck: false}); // noAck 表示是否发送任务完成通知
+  });
+});
