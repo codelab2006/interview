@@ -1,0 +1,4 @@
+String：适用于少量的字符串操作的情况
+
+StringBuilder：适用于单线程下在字符缓冲区进行大量操作的情况，速度快(are not safe for use by multiple threads.)
+StringBuffer：适用多线程下在字符缓冲区进行大量操作的情况，速度慢(A thread-safe, mutable sequence of characters.)

@@ -1,0 +1,84 @@
+==
+java中的数据类型，可分为两类：
+1.基本数据类型，也称原始数据类型
+byte,short,char,int,long,float,double,boolean 他们之间的比较，应用双等号（==）,比较的是他们的值。
+2.引用类型(类、接口、数组)
+当他们用（==）进行比较的时候，比较的是他们在内存中的存放地址，所以，除非是同一个new出来的对象，他们的比较后的结果为true，否则比较后结果为false。
+
+equals
+默认情况（没有覆盖equals方法）下equals方法都是调用Object类的equals方法，而Object的equals方法主要用于判断对象的内存地址引用是不是同一个地址（是不是同一个对象）。
+class Object equals method:
+public boolean equals(Object obj) {
+    return (this == obj);
+}
+
+class String equals method:
+public boolean equals(Object anObject) {
+    if (this == anObject) {
+        return true;
+    }
+    if (anObject instanceof String) {
+        String anotherString = (String)anObject;
+        int n = value.length;
+        if (n == anotherString.value.length) {
+            char v1[] = value;
+            char v2[] = anotherString.value;
+            int i = 0;
+            while (n-- != 0) {
+                if (v1[i] != v2[i])
+                    return false;
+                i++;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+这里对equals重新需要注意五点：
+1 自反性：对任意引用值X，x.equals(x)的返回值一定为true. 
+2 对称性：对于任何引用值x,y,当且仅当y.equals(x)返回值为true时，x.equals(y)的返回值一定为true; 
+3 传递性：如果x.equals(y)=true, y.equals(z)=true,则x.equals(z)=true 
+4 一致性：如果参与比较的对象没任何改变，则对象比较的结果也不应该有任何改变 
+5 非空性：任何非空的引用值X，x.equals(null)的返回值一定为false 
+实现高质量equals方法的诀窍：
+1.使用==符号检查“参数是否为这个对象的引用”。如果是，则返回true。这只不过是一种性能优化，如果比较操作有可能很昂贵，就值得这么做。
+2.使用instanceof操作符检查“参数是否为正确的类型”。如果不是，则返回false。一般来说，所谓“正确的类型”是指equals方法所在的那个类。
+3.把参数转换成正确的类型。因为转换之前进行过instanceof测试，所以确保会成功。
+4.对于该类中的每个“关键”域，检查参数中的域是否与该对象中对应的域相匹配。如果这些测试全部成功，则返回true;否则返回false。
+5.当编写完成了equals方法之后，检查“对称性”、“传递性”、“一致性”。
+
+hashCode
+hashCode()方法返回的就是一个数值，从方法的名称上就可以看出，其目的是生成一个hash码。hash码的主要用途就是在对对象进行散列的时候作为key输入，
+据此很容易推断出，我们需要每个对象的hash码尽可能不同，这样才能保证散列的存取性能。事实上，
+Object类提供的默认实现确实保证每个对象的hash码不同（在对象的内存地址基础上经过特定算法返回一个hash码）。
+Java采用了哈希表的原理。哈希（Hash）实际上是个人名，由于他提出一哈希算法的概念，所以就以他的名字命名了。 
+哈希算法也称为散列算法，是将数据依特定算法直接指定到一个地址上。
+初学者可以这样理解，hashCode方法实际上返回的就是对象存储的物理地址（实际可能并不是）。
+
+所有散列函数都有如下一个基本特性：
+1：如果a=b，则h(a) = h(b)。
+2：如果a!=b，则h(a)与h(b)可能得到相同的散列值。
+class Object hashCode method:
+public native int hashCode();
+
+class String hashCode method:
+public int hashCode() {
+    int h = hash;
+    if (h == 0 && value.length > 0) {
+        char val[] = value;
+
+        for (int i = 0; i < value.length; i++) {
+            h = 31 * h + val[i];
+        }
+        hash = h;
+    }
+    return h;
+}
+
+eqauls方法和hashCode方法关系
+Java对于eqauls方法和hashCode方法是这样规定的：
+1、如果两个对象equals，Java运行时环境会认为他们的hashcode一定相等。
+2、如果两个对象不equals，他们的hashcode有可能相等。
+3、如果两个对象hashcode相等，他们不一定equals。
+4、如果两个对象hashcode不相等，他们一定不equals。

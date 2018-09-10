@@ -1,0 +1,8 @@
+byte b; 1字节
+short s; 2字节
+int i; 4字节
+long l; 8字节
+char c; 2字节（C语言中是1字节）
+float f; 4字节
+double d; 8字节
+boolean bool; false/true 1字节
