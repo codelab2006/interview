@@ -1,0 +1,72 @@
+Correlation Id
+In the method presented above we suggest creating a callback queue for every RPC request. That's pretty inefficient, 
+but fortunately there is a better way - let's create a single callback queue per client.
+
+That raises a new issue, having received a response in that queue it's not clear to which request the response belongs. 
+That's when the correlation_id property is used. We're going to set it to a unique value for every request. 
+Later, when we receive a message in the callback queue we'll look at this property, and based on that we'll be able to match a response with a request.
+ If we see an unknown correlation_id value, we may safely discard the message - it doesn't belong to our requests.
+
+You may ask, why should we ignore unknown messages in the callback queue, 
+rather than failing with an error? It's due to a possibility of a race condition on the server side. Although unlikely, 
+it is possible that the RPC server will die just after sending us the answer, but before sending an acknowledgment message for the request. 
+If that happens, the restarted RPC server will process the request again. That's why on the client we must handle the duplicate responses gracefully, 
+and the RPC should ideally be idempotent.
+
+// rpc_server.js
+var amqp = require('amqplib/callback_api');
+amqp.connect('amqp://localhost', function(err, conn) {
+  conn.createChannel(function(err, ch) {
+    var q = 'rpc_queue';
+    ch.assertQueue(q, {durable: false});
+    ch.prefetch(1);
+    console.log(' [x] Awaiting RPC requests');
+    ch.consume(q, function reply(msg) {
+      var n = parseInt(msg.content.toString());
+      console.log(" [.] fib(%d)", n);
+      var r = fibonacci(n);
+      ch.sendToQueue(msg.properties.replyTo,
+        new Buffer(r.toString()),
+        {correlationId: msg.properties.correlationId});
+      ch.ack(msg);
+    });
+  });
+});
+
+function fibonacci(n) {
+  if (n == 0 || n == 1)
+    return n;
+  else
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+// rpc_client.js
+var amqp = require('amqplib/callback_api');
+var args = process.argv.slice(2);
+if (args.length == 0) {
+  console.log("Usage: rpc_client.js num");
+  process.exit(1);
+}
+amqp.connect('amqp://localhost', function(err, conn) {
+  conn.createChannel(function(err, ch) {
+    ch.assertQueue('', {exclusive: true}, function(err, q) {
+      var corr = generateUuid();
+      var num = parseInt(args[0]);
+      console.log(' [x] Requesting fib(%d)', num);
+      ch.consume(q.queue, function(msg) {
+        if (msg.properties.correlationId == corr) {
+          console.log(' [.] Got %s', msg.content.toString());
+          setTimeout(function() { conn.close(); process.exit(0) }, 500);
+        }
+      }, {noAck: true});
+      ch.sendToQueue('rpc_queue',
+      new Buffer(num.toString()),
+      { correlationId: corr, replyTo: q.queue });
+    });
+  });
+});
+function generateUuid() {
+  return Math.random().toString() +
+         Math.random().toString() +
+         Math.random().toString();
+}
