@@ -1,0 +1,92 @@
+class Bug implements Cloneable {
+
+    private String name;
+
+    public Bug(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+}
+
+class Apple implements Cloneable {
+
+    private Bug bug;
+
+    public Apple() {}
+
+    public Apple(String bugName) {
+        bug = new Bug(bugName);
+    }
+
+    public void setBug(Bug bug) {
+        this.bug = bug;
+    }
+
+    public Bug getBug() {
+        return this.bug;
+    }
+}
+
+class ColoredApple extends Apple {
+
+    private String color;
+
+    public ColoredApple() {}
+
+    public ColoredApple(String bugName, String color) {
+        super(bugName);
+        this.color = color;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        ColoredApple clone = (ColoredApple) super.clone();
+        clone.setBug((Bug) clone.getBug().clone());
+        return clone;
+    }
+}
+
+public class Main {
+
+    static void print(Object o) {
+        System.out.println(o);
+    }
+
+    public static void main(String[] args) throws CloneNotSupportedException {
+        ColoredApple a1 = new ColoredApple("Big Bug", "red");
+        ColoredApple ca = (ColoredApple) ((ColoredApple) a1).clone();
+
+        System.out.println(a1.getBug().getName()); // Big Bug
+        System.out.println(ca.getBug().getName()); // Big Bug
+
+        System.out.println(a1.getColor()); // red
+        System.out.println(ca.getColor()); // red
+
+        System.out.println(ca == a1); // false
+
+        System.out.println(a1.getBug()); // com.lab.Bug@60e53b93
+        System.out.println(ca.getBug()); // com.lab.Bug@5e2de80c
+
+        System.out.println(ca.getBug() == a1.getBug()); // false
+    }
+}
