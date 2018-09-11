@@ -1,0 +1,51 @@
+class Producer implements Runnable {
+
+    private BlockingQueue bq;
+
+    public Producer(BlockingQueue bq) {
+        this.bq = bq;
+    }
+
+    @Override
+    public void run() {
+        int i = 0;
+        while (i < 100) {
+            try {
+               Thread.sleep(2000);
+                bq.put(i);
+                i++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+class Consumer implements Runnable {
+
+    private BlockingQueue bq;
+
+    public Consumer(BlockingQueue bq) {
+        this.bq = bq;
+    }
+
+    @Override
+    public void run() {
+        while(true) {
+            try {
+                System.out.println("size: " + bq.size());
+                Thread.sleep(3000);
+                System.out.println(bq.take());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+
+public static void main(String[] args) throws InterruptedException {
+    BlockingQueue<DelayedTask> dq = new DelayQueue();
+    dq.put(new DelayedTask("DelayedTask01", 5000));
+    System.out.println(dq.take());
+}

@@ -1,0 +1,21 @@
+class DelayedTask implements Delayed {
+
+    private String name;
+    private long delayTime;
+
+    public DelayedTask(String name, long delayTime) {
+        this.name = name;
+        this.delayTime = System.currentTimeMillis() + delayTime;
+    }
+
+    @Override
+    public long getDelay(TimeUnit unit) {
+        long t = this.delayTime - System.currentTimeMillis();
+        return t;
+    }
+
+    @Override
+    public int compareTo(Delayed o) {
+        return 0; // TODO
+    }
+}
