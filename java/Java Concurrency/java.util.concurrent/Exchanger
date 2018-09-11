@@ -1,0 +1,40 @@
+class Worker implements Runnable {
+    private final Exchanger exchanger;
+    private Object object;
+    private final long time;
+    public Worker(Exchanger exchanger, Object object, long time) {
+        this.exchanger = exchanger;
+        this.object = object;
+        this.time = time;
+    }
+    @Override
+    public void run() {
+        try {
+            System.out.println(Thread.currentThread().getName() + this.object);
+            Thread.sleep(this.time);
+            this.object = this.exchanger.exchange(this.object);
+            System.out.println(Thread.currentThread().getName() + this.object);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+public class Main {
+    static void print(Object o) {
+        System.out.println(o);
+    }
+    public static void main(String[] args) {
+
+        Exchanger exchanger = new Exchanger();
+
+        Worker worker1 = new Worker(exchanger, "A", 2000);
+        Worker worker2 = new Worker(exchanger, "B", 5000);
+
+        Thread thread1 = new Thread(worker1);
+        Thread thread2 = new Thread(worker2);
+
+        thread1.start();
+        thread2.start();
+    }
+}
