@@ -95,3 +95,29 @@ public class Main {
         System.out.println(ca.getBug() == a1.getBug()); // false
     }
 }
+
+延伸阅读：
+    深拷贝和浅拷贝中,实现clone()的第二点,是要重写Object()类的clone()方法,并将protected改为public。
+    如果不重写行吗? 因为Object类的clone()方法是protected修饰的, 我原来对protected的理解为: "同一个包或者不同包的子类可以访问"
+
+    Object类是所有 类的父类,那么为什么子类不能访问父类的protected修饰的方法呢?
+    "与基类不在同一个包中的子类，只能访问自身从基类继承而来的受保护成员，而不能访问基类实例本身的受保护成员"
+
+    protected 修饰的类和属性,在同一个包或者不同包的子类可以访问,可以理解为:
+    在不同包时,指的是通过自身实例(自身的引用)访问,而不能通过父类实例(引用)访问。
+    在相同包时,protected和public是一样的。注意(Object类和TestClone可不是同一个包)
+
+
+            │ Class │ Package │ Subclass │ Subclass │ World
+            │       │         │(same pkg)│(diff pkg)│
+────────────┼───────┼─────────┼──────────┼──────────┼────────
+public      │   +   │    +    │    +     │     +    │   +
+────────────┼───────┼─────────┼──────────┼──────────┼────────
+protected   │   +   │    +    │    +     │     +    │
+────────────┼───────┼─────────┼──────────┼──────────┼────────
+no modifier │   +   │    +    │    +     │          │
+────────────┼───────┼─────────┼──────────┼──────────┼────────
+private     │   +   │         │          │          │
+
++ : accessible
+blank : not accessible
