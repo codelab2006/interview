@@ -1,0 +1,10 @@
+The thread pool contained inside the ThreadPoolExecutor can contain a varying amount of threads. 
+The number of threads in the pool is determined by these variables:
+
+    corePoolSize
+    maximumPoolSize
+
+If less than corePoolSize threads are created in the the thread pool when a task is delegated to the thread pool, 
+then a new thread is created, even if idle threads exist in the pool.
+If the internal queue of tasks is full, and corePoolSize threads or more are running, but less than maximumPoolSize threads are running, 
+then a new thread is created to execute the task.
