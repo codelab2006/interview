@@ -1,1 +1,74 @@
 
+
+class Job implements Serializable {
+
+    private String name;
+    private int xyz;
+
+    public Job(String name, int xyz) {
+        this.name = name;
+        this.xyz = xyz;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getXyz() {
+        return xyz;
+    }
+}
+
+class Person implements Serializable {
+
+    private String name;
+    private int age;
+
+    private Job job;
+
+    public Person(String name, int age, Job job) {
+        this.name = name;
+        this.age = age;
+        this.job = job;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public Job getJob() {
+        return job;
+    }
+}
+
+public class Main {
+
+    private static void println(Object o) {
+        System.out.println(o);
+    }
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        println(System.getProperty("user.dir"));
+        ObjectOutputStream oo = new ObjectOutputStream(new FileOutputStream("write-file.txt"));
+
+        Person person = new Person("Huang", 18, new Job("Develop", 1000000));
+        oo.writeObject(person);
+        oo.close();
+
+        ObjectInputStream objectInputStream =
+                new ObjectInputStream(new FileInputStream("write-file.txt"));
+
+        Person personRead = (Person) objectInputStream.readObject();
+        objectInputStream.close();
+
+        println(personRead.getName());
+        println(personRead.getAge());
+
+        println(personRead.getJob().getName());
+        println(personRead.getJob().getXyz());
+    }
+}
