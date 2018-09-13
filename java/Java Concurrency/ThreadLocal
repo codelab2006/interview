@@ -1,0 +1,54 @@
+
+class Counter {
+
+    private static ThreadLocal<Integer> c = ThreadLocal.withInitial(() -> 0);
+
+    public static int getC() {
+        return Counter.c.get();
+    }
+
+    public static void setC(int c) {
+        Counter.c.set(c);
+    }
+}
+
+public class Main {
+
+    static void print(Object o) {
+        System.out.println(o);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread thread1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                    Counter.setC(100);
+                    print(Counter.getC());
+                    Thread.sleep(1000);
+                    print(Counter.getC());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Thread thread2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Counter.setC(200);
+                    print(Counter.getC());
+                    Thread.sleep(1000);
+                    print(Counter.getC());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread1.start();
+        thread2.start();
+    }
+}
