@@ -1,0 +1,30 @@
+The actual directory and file hierarchy used to contain the source code of an application can be pretty much anything you like. 
+However, the following organization has proven to be quite generally applicable, and is expected by the example build.xml configuration file that is discussed below. 
+All of these components exist under a top level project source directory for your application:
+
+    docs/ - Documentation for your application, in whatever format your development team is using.
+
+    src/ - Java source files that generate the servlets, beans, and other Java classes that are unique to your application. If your source code is organized in packages (highly recommended), the package hierarchy should be reflected as a directory structure underneath this directory.
+
+    web/ - The static content of your web site (HTML pages, JSP pages, JavaScript files, CSS stylesheet files, and images) that will be accessible to application clients. This directory will be the document root of your web application, and any subdirectory structure found here will be reflected in the request URIs required to access those files.
+
+    web/WEB-INF/ - The special configuration files required for your application, 
+                   including the web application deployment descriptor (web.xml, defined in the Servlet Specification), 
+                   tag library descriptors for custom tag libraries you have created, and other resource files you wish to include within your web application. 
+                   Even though this directory appears to be a subdirectory of your document root, 
+                   the Servlet Specification prohibits serving the contents of this directory (or any file it contains) directly to a client request. 
+                   Therefore, this is a good place to store configuration information that is sensitive (such as database connection usernames and passwords), 
+                   but is required for your application to operate successfully.
+
+During the development process, two additional directories will be created on a temporary basis:
+
+    build/ - When you execute a default build (ant), this directory will contain an exact image of the files in the web application archive for this application. 
+             Tomcat allows you to deploy an application in an unpacked directory like this, either by copying it to the $CATALINA_BASE/webapps directory, 
+             or by installing it via the "Manager" web application. The latter approach is very useful during development, and will be illustrated below. 
+
+    dist/ - When you execute the ant dist target, this directory will be created. It will create an exact image of the binary distribution for your web application, 
+            including an license information, documentation, and README files that you have prepared.
+
+Note that these two directories should NOT be archived in your source code control system, because they are deleted and recreated (from scratch) as needed during development. 
+For that reason, you should not edit any source files in these directories if you want to maintain a permanent record of the changes, 
+because the changes will be lost the next time that a build is performed.

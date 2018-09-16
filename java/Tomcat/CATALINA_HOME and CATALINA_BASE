@@ -1,0 +1,21 @@
+CATALINA_HOME and CATALINA_BASE
+
+Throughout the documentation, there are references to the two following properties:
+
+    CATALINA_HOME: Represents the root of your Tomcat installation, for example /home/tomcat/apache-tomcat-9.0.10 or C:\Program Files\apache-tomcat-9.0.10.
+    CATALINA_BASE: Represents the root of a runtime configuration of a specific Tomcat instance. If you want to have multiple Tomcat instances on one machine, 
+                   use the CATALINA_BASE property.
+
+If you set the properties to different locations, the CATALINA_HOME location contains static sources, such as .jar files, or binary files. 
+The CATALINA_BASE location contains configuration files, log files, deployed applications, and other runtime requirements.
+==============================================================================================================================================================================
+Why Use CATALINA_BASE
+
+By default, CATALINA_HOME and CATALINA_BASE point to the same directory. Set CATALINA_BASE manually when you require running multiple Tomcat instances on one machine. Doing so provides the following benefits:
+
+    Easier management of upgrading to a newer version of Tomcat. Because all instances with single CATALINA_HOME location share one set of .jar files and binary files, 
+    you can easily upgrade the files to newer version and have the change propagated to all Tomcat instances using the same CATALIA_HOME directory.
+
+    Avoiding duplication of the same static .jar files.
+
+    The possibility to share certain settings, for example the setenv shell or bat script file (depending on your operating system).
