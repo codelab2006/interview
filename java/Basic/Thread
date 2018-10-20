@@ -1,0 +1,27 @@
+Thread/Runnable
+Thread 只能单继承
+Runnable 接口更灵活 Runnable的代码可以被多个线程共享（Thread实例），适合于多个多个线程处理统一资源的情况。
+
+Runnable/Callable
+  (1) Callable规定的方法是 call(), Runnable规定的方法是 run()。
+  (2) Callable的任务执行后可返回值，而 Runnable的任务是不能返回值。
+  (3) call方法可以抛出异常， run方法不可以。
+
+sleep/wait
+sleep属于Thread类中 sleep()方法导致了程序暂停执行指定的时间，让出cpu该其他线程，但是他的监控状态依然保持者，当指定的时间到了又会自动恢复运行状态。
+    在调用sleep()方法的过程中，线程不会释放对象锁。
+wait属于Object类中 而当调用wait()方法的时候，线程会放弃对象锁，进入等待此对象的等待锁定池，只有针对此对象调用notify()方法后本线程才进入对象锁定池准备
+
+join/yield
+join: 等待调用join的线程执行完之后再执行下一行代码
+yield：放弃继续执行的权力，将权力让给其他线程（其他线程也包括当前放弃权力的线程）
+
+Java并发：await/wait 与sleep、yield间的区别
+    是否释放锁：调用sleep和yield的时候不释放当前线程所获得的锁，但是调用await/wait的时候却释放了其获取的锁并阻塞等待。
+    调用后何时恢复：
+        # sleep让线程阻塞，且在指定的时间之内都不会执行，时间到了之后恢复到就绪状态，也不一定被立即调度执行；
+        # yield只是让当前对象回到就绪状态，还是有可能马上被再次被调用执行。
+        # wait/await，它会一直阻塞在条件队列之上，之后某个线程调用对应的signal/notify方法，才会使得wait/await的线程回到就绪状态，也是不一定立即执行。
+
+    谁的方法：yield和sleep方法都是Thread类的，而wait方法是Object类的，await方法是Condition显示条件队列的。
+    执行环境：yield和sleep方法可以放在线程中的任意位置，而await/wait方法必须放在同步块里面，否则会产生运行时异常。
