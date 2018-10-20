@@ -1,0 +1,10 @@
+PermGen space
+    1. 增加java虚拟机中的XX:PermSize和XX:MaxPermSize参数的大小，其中XX:PermSize是初始永久保存区域大小，XX:MaxPermSize是最大永久保存区域大小。
+    Java 8 已经移除了PermGen， 改用Metespace，大小是unlimited
+
+Java heap space
+    1. 增加Java虚拟机中Xms（初始堆大小）和Xmx（最大堆大小）参数的大小。
+
+StackOverFlow
+
+OutOfMemoryError：unable to create new native thread
