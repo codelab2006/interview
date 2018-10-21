@@ -1,4 +1,27 @@
 String：适用于少量的字符串操作的情况
+    String s1 = "a"; // 常量池中添加对象"a"
+    String s2 = "a"; // 使用常量池中已有的对象"a"
+    println(s1 == s2); //true
+    String s3 = new String("a"); // 堆中添加对象"a", 常量池中对象"a"已存在
+    println(s1 == s3); //false
+    s3 = s3.intern(); // 常量池中已有对象"a", 返回常量池中对象"a"的引用
+    println(s1 == s3); //true;
+
+    String s4 = new String("b"); // 堆中添加对象"b", 常量池中添加对象"b"
+    String s5 = "b"; // 使用常量池中已有的对象"b"
+    println(s4 == s5); //false
+
+    // String的+操作实际上是创建StringBuilder对象来进行的，最后调用toString方法返回的对象存储在堆中
+    // 生成了五个对象, 常量池的中的对象"aaa", "bbb", 堆中对象"aaa", "bbb", s6指向的堆中的对象"aaabbb"
+    String s6 = new String("aaa") + new String("bbb");
+    s6.intern(); //jdk1.7 之后 常量池不仅能存储对象，还能存储对象的引用，这里会存储对象"aaabbb"在堆中的引用
+    String s7 = "aaabbb"; //常量池中没有对象"aaabbb", 但是有一个堆中对象"aaabbb"的引用
+    println(s6 == s7); //true
+
+    String s8 = new String("abc") + new String("abc");
+    String s9 = "abcabc"; //常量池存储对象"abcabc"
+    s8.intern();
+    println(s8 == s9); //false
 
 StringBuilder：适用于单线程下在字符缓冲区进行大量操作的情况，速度快(are not safe for use by multiple threads.)
 StringBuffer：适用多线程下在字符缓冲区进行大量操作的情况，速度慢(A thread-safe, mutable sequence of characters.)

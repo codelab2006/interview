@@ -18,7 +18,7 @@ because all application threads are stopped until the operation completes.
     That’s why it’s necessary to monitor and tune the garbage collector to avoid timeouts in the highly
     responsive applications.
 
-Permanent Generation
+Permanent Generation (Perm Gen is removed after 1.8)
     Permanent Generation or “Perm Gen” contains the application metadata required by the JVM to describe
     the classes and methods used in the application. Note that Perm Gen is not part of Java Heap memory.
     Perm Gen is populated by JVM at runtime based on the classes used by the application.

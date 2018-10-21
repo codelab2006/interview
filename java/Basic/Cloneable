@@ -1,4 +1,4 @@
-一个类实现该接口表明该类的实例通过java.lang.Object#clone()方法拷贝字段的字段是合法的。
+一个类实现该接口表明该类的实例通过java.lang.Object#clone()方法拷贝字段是合法的。
 在一个没有实现该接口的实例上调用对象的clone方法会抛出CloneNotSupportedException异常。
 通常，类实现该接口应该用public重写Object.clone方法（protected）。
 注意，该接口没包含clone方法，因此，仅仅实现该接口是不可能克隆对象，即使通过反射调用克隆方法，也不能保证它会成功。
