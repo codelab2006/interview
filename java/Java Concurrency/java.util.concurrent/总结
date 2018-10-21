@@ -1,0 +1,54 @@
+BlockingQueue
+BlockingDeque
+    
+ConcurrentMap
+
+CountDownLatch
+    A java.util.concurrent.CountDownLatch is a concurrency construct that allows one or more threads to wait for a given set of operations to complete.
+    A CountDownLatch is initialized with a given count. This count is decremented by calls to the countDown() method. 
+    Threads waiting for this count to reach zero can call one of the await() methods. Calling await() blocks the thread until the count reaches zero.
+
+CyclicBarrier
+    CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，
+    直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。CyclicBarrier默认的构造方法是CyclicBarrier(int parties)，
+    其参数表示屏障拦截的线程数量，每个线程调用await方法告诉CyclicBarrier我已经到达了屏障，然后当前线程被阻塞。
+
+Exchanger
+    Represents a kind of rendezvous point where two threads can exchange objects.
+
+Semaphore
+    Semaphore是用来保护一个或者多个共享资源的访问，Semaphore内部维护了一个计数器，其值为可以访问的共享资源的个数。一个线程要访问共享资源，先获得信号量，如果信号量的计数器值大于1，
+    意味着有共享资源可以访问，则使其计数器值减去1，再访问共享资源。
+    如果计数器值为0,线程进入休眠。当某个线程使用完共享资源后，释放信号量，并将信号量内部的计数器加1，之前进入休眠的线程将被唤醒并再次试图获得信号量。
+
+Executor
+    Executor：一个接口，其定义了一个接收Runnable对象的方法executor，其方法签名为executor(Runnable command)
+    ExecutorService：是一个比Executor使用更广泛的子类接口，其提供了生命周期管理的方法，以及可跟踪一个或多个异步任务执行状况返回Future的方法
+    AbstractExecutorService：ExecutorService执行方法的默认实现
+    ScheduledExecutorService：一个可定时调度任务的接口
+    ScheduledThreadPoolExecutor：ScheduledExecutorService的实现，一个可定时调度任务的线程池
+    ThreadPoolExecutor：线程池，可以通过调用Executors以下静态工厂方法来创建线程池并返回一个ExecutorService对象
+        ThreadPoolExecutor构造函数的各个参数说明:
+            public ThreadPoolExecutor(int corePoolSize,
+                                      int maximumPoolSize,
+                                      long keepAliveTime,
+                                      TimeUnit unit,
+                                      BlockingQueue<Runnable> workQueue,
+                                      ThreadFactory threadFactory,
+                                      RejectedExecutionHandler handler) //后两个参数为可选参数
+            参数说明：
+                corePoolSize: 核心线程数，如果运行的线程少于corePoolSize，则创建新线程来执行新任务，即使线程池中的其他线程是空闲的
+                maximumPoolSize: 最大线程数，可允许创建的线程数，corePoolSize和maximumPoolSize设置的边界自动调整池大小：
+                    corePoolSize < 运行的线程数 < maximumPoolSize: 仅当队列满时才创建新线程
+                    corePoolSize = 运行的线程数 = maximumPoolSize：创建固定大小的线程池
+                keepAliveTime: 如果线程数多于corePoolSize,则这些多余的线程的空闲时间超过keepAliveTime时将被终止
+                unit:keepAliveTime参数的时间单位
+                workQueue: 保存任务的阻塞队列，与线程池的大小有关：
+                    当运行的线程数少于corePoolSize时，在有新任务时直接创建新线程来执行任务而无需再进队列
+                    当运行的线程数等于或多于corePoolSize，在有新任务添加时则选加入队列，不直接创建线程
+                    当队列满时，在有新任务时就创建新线程
+ 
+                threadFactory:使用ThreadFactory创建新线程，默认使用defaultThreadFactory创建线程
+                handle:定义处理被拒绝任务的策略，默认使用ThreadPoolExecutor.AbortPolicy,任务被拒绝时将抛出RejectExecutorException
+
+ 
