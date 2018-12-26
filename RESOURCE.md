@@ -13,3 +13,4 @@ https://yuchengkai.cn/docs/zh/frontend/
 https://node.green/
 https://whatwg.org/
 https://developers.google.com/web/tools/workbox/
+https://ajv.js.org/
