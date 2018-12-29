@@ -14,3 +14,9 @@ https://node.green/
 https://whatwg.org/
 https://developers.google.com/web/tools/workbox/
 https://ajv.js.org/
+https://daniel.haxx.se/
+https://adonisjs.com/
+https://nestjs.com/
+https://sailsjs.com/
+https://loopback.io/
+https://hapijs.com/
