@@ -13,8 +13,6 @@ https://yuchengkai.cn/docs/zh/frontend/
 https://node.green/
 https://whatwg.org/
 https://developers.google.com/web/tools/workbox/
-https://nestjs.com/
-https://loopback.io/
 https://ajv.js.org/
 https://daniel.haxx.se/
 https://adonisjs.com/
