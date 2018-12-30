@@ -21,3 +21,6 @@ https://sailsjs.com/
 https://loopback.io/
 https://hapijs.com/
 https://dos.zczc.cz/
+http://speakingjs.com/
+https://docs.oracle.com/javase/8/docs/api/overview-tree.html
+https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
